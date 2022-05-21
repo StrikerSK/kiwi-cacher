@@ -39,6 +39,13 @@ func TestItemFound(t *testing.T) {
 	assert.Equal(t, "London", value)
 }
 
+func TestItemNotFound(t *testing.T) {
+	value, found := testCache.Get(999)
+
+	assert.False(t, found)
+	assert.Equal(t, "", value)
+}
+
 func TestFollowingRuns(t *testing.T) {
 	start := time.Now()
 	_, _ = testCache.Get(1)
@@ -49,5 +56,5 @@ func TestFollowingRuns(t *testing.T) {
 	secondRun := time.Since(start).Nanoseconds()
 
 	fmt.Printf("First time run: %d and second time run: %d\n", firstRun, secondRun)
-	assert.Less(t, secondRun, firstRun)
+	assert.LessOrEqual(t, secondRun, firstRun)
 }

@@ -2,6 +2,7 @@ package cache
 
 import (
 	"github.com/patrickmn/go-cache"
+	"log"
 	"strconv"
 	"time"
 )
@@ -28,10 +29,21 @@ type Cache struct {
 }
 
 func NewCache(fs Fetcher) *Cache {
-	return &Cache{
+	tmpCache := &Cache{
 		fs: fs,
 		c:  cache.New(5*time.Minute, 10*time.Minute),
 	}
+
+	data, err := fs.FetchAll()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for key, element := range data {
+		tmpCache.c.Set(strconv.Itoa(key), element, cache.DefaultExpiration)
+	}
+
+	return tmpCache
 }
 
 func (r *Cache) Get(id int) (string, bool) {
